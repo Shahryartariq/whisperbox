@@ -5,7 +5,7 @@ import { ImageResponse } from "next/og";
 export const OG_SIZE = { width: 1200, height: 630 };
 
 /** The shared link-preview card: a paper slip with the question on dusk violet. */
-export async function renderOgCard(text: string, footer: string) {
+export async function renderOgCard(text: string, footer: string, cacheSeconds = 0) {
   const [display, hand] = await Promise.all([
     readFile(join(process.cwd(), "assets/bricolage-grotesque-latin-700-normal.woff")),
     readFile(join(process.cwd(), "assets/caveat-latin-600-normal.woff")),
@@ -47,6 +47,12 @@ export async function renderOgCard(text: string, footer: string) {
     ),
     {
       ...OG_SIZE,
+      // Let the CDN keep the image instead of drawing it again for every visitor.
+      headers: cacheSeconds
+        ? {
+            "Cache-Control": `public, max-age=3600, s-maxage=${cacheSeconds}, stale-while-revalidate=86400`,
+          }
+        : undefined,
       fonts: [
         { name: "Bricolage", data: display, weight: 700, style: "normal" },
         { name: "Caveat", data: hand, weight: 600, style: "normal" },

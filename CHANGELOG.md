@@ -41,6 +41,7 @@ First public release.
 - Fonts are self-hosted through `next/font` with the headline font preloaded.
 - Firebase loads on demand after the page has rendered.
 - Server functions run in Mumbai, next to the database.
+- Question preview images are cached at the CDN instead of being redrawn for every visitor.
 
 ### Fixes
 - The home form no longer stays stuck on "Creating your link…" after you delete a question and come back.

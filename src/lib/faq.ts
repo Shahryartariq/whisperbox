@@ -13,7 +13,7 @@ export const FAQ: { q: string; a: string }[] = [
   },
   {
     q: "What if someone sends a mean answer?",
-    a: "Only you can manage your question. Delete any answer with one click, stop taking new answers at any time, or delete the whole question and every answer with it.",
+    a: "Only you can manage your question. Delete any answer, stop taking new answers at any time, or delete the whole question and every answer with it.",
   },
   {
     q: "Can I share my link on WhatsApp or Instagram?",
