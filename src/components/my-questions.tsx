@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAnonUser } from "@/lib/use-anon-user";
-import { watchMyQuestions, type Question } from "@/lib/whisper";
+import type { Question } from "@/lib/whisper";
 
 /** The questions this browser created. Hidden until there is at least one. */
 export function MyQuestions() {
@@ -12,7 +12,15 @@ export function MyQuestions() {
 
   useEffect(() => {
     if (!user) return;
-    return watchMyQuestions(user.uid, setQuestions, () => setQuestions([]));
+    let cancelled = false;
+    let stop = () => {};
+    import("@/lib/whisper").then((w) => {
+      if (!cancelled) stop = w.watchMyQuestions(user.uid, setQuestions, () => setQuestions([]));
+    });
+    return () => {
+      cancelled = true;
+      stop();
+    };
   }, [user]);
 
   if (questions.length === 0) return null;

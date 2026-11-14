@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { ProsePage } from "@/components/prose-page";
+import { pageMetadata } from "@/lib/metadata";
 import { PAGE_DATES, REPO_URL } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Terms",
+  socialTitle: "Terms | Whisperbox",
   description: "The rules for using Whisperbox: be kind, don't break the law, and look after your own link.",
-  alternates: { canonical: "/terms" },
-};
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (

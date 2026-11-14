@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { ProsePage } from "@/components/prose-page";
+import { pageMetadata } from "@/lib/metadata";
 import { PAGE_DATES, REPO_URL } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Privacy",
+  socialTitle: "Privacy | Whisperbox",
   description: "What Whisperbox stores, what it doesn't, and how to delete your questions and answers.",
-  alternates: { canonical: "/privacy" },
-};
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

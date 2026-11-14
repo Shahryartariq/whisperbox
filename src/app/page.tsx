@@ -6,13 +6,15 @@ import { JsonLd } from "@/components/json-ld";
 import { MyQuestions } from "@/components/my-questions";
 import { FAQ } from "@/lib/faq";
 import { IDEA_GROUPS } from "@/lib/ideas";
+import { pageMetadata } from "@/lib/metadata";
 import { AUTHOR, REPO_URL, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: { absolute: SITE_TITLE },
+export const metadata: Metadata = pageMetadata({
+  title: SITE_TITLE,
+  absoluteTitle: true,
   description: SITE_DESCRIPTION,
-  alternates: { canonical: "/" },
-};
+  path: "/",
+});
 
 const IDEA_COUNT = IDEA_GROUPS.reduce((n, g) => n + g.questions.length, 0);
 
@@ -77,8 +79,8 @@ export default function Home() {
         Ask anything. Read what people really think.
       </h1>
       <p className="mt-5 max-w-xl text-lg leading-relaxed text-haze">
-        Write a question and share the link. Answers land on your wall as people send them.
-        Nobody signs up, and no names are attached.
+        Write a question and share the link. People answer anonymously, and their answers land
+        on your wall as they send them. Nobody signs up, and no names are attached.
       </p>
       <div className="mt-10">
         <Suspense fallback={<AskForm />}>

@@ -16,9 +16,12 @@ import {
 } from "firebase/firestore";
 import { customAlphabet } from "nanoid";
 import { firebase } from "./firebase";
-import { ID_ALPHABET } from "./limits";
+import { ID_ALPHABET, REPLY_PAGE } from "./limits";
 
 const newId = customAlphabet(ID_ALPHABET, 8);
+
+/** Trims and stops walls of blank lines (three or more line breaks become two). */
+const tidy = (text: string) => text.trim().replace(/\n{3,}/g, "\n\n");
 
 export type Question = {
   id: string;
@@ -45,7 +48,7 @@ export async function createQuestion(uid: string, text: string): Promise<string>
   const id = newId();
   const batch = writeBatch(db);
   batch.set(doc(db, "questions", id), {
-    text: text.trim(),
+    text: tidy(text),
     ownerUid: uid,
     open: true,
     createdAt: serverTimestamp(),
@@ -60,7 +63,7 @@ export async function addReply(uid: string, questionId: string, text: string) {
   const { db } = firebase();
   const batch = writeBatch(db);
   batch.set(doc(collection(db, "questions", questionId, "replies")), {
-    text: text.trim(),
+    text: tidy(text),
     createdAt: serverTimestamp(),
   });
   batch.set(doc(db, "limits", uid), { lastReplyAt: serverTimestamp() }, { merge: true });
@@ -99,7 +102,7 @@ export function watchReplies(
   const q = query(
     collection(db, "questions", questionId, "replies"),
     orderBy("createdAt", "desc"),
-    limit(300),
+    limit(REPLY_PAGE),
   );
   return onSnapshot(
     q,

@@ -2,6 +2,7 @@ import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { AUTHOR, REPO_URL, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
+import { bricolage, caveat } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -49,7 +50,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className={`${bricolage.variable} ${caveat.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <a
           href="#main"

@@ -49,9 +49,12 @@ All the rules live in [`firestore.rules`](firestore.rules) and are covered by [t
 - **Security headers** on every page: Content Security Policy (Firebase hosts only, no framing, no plugins), HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` and `Cross-Origin-Opener-Policy`. The CSP has no nonce, so pages stay statically rendered. That's safe here because React escapes all user text and the app never injects HTML.
 - **SEO:** canonical URLs, Open Graph and X cards with generated images, `sitemap.xml`, `robots.txt`, a web app manifest with icons, and JSON-LD (`WebSite`, `WebApplication`, `FAQPage`, `BreadcrumbList`). Question pages are `noindex`: they're personal, so they stay out of search results but still show link previews.
 - **Content pages:** a home page with how-it-works and an FAQ, `/ideas` (44 question ideas), `/privacy` and `/terms`.
-- **Error handling:** friendly error and not-found pages, plus clear messages when the connection fails or a rate limit is hit.
+- **Error handling:** friendly error and not-found pages, messages that say what went wrong (too fast, offline, service busy), countdowns for the rate limits, and sends that wait for the connection to return.
 - **Analytics:** Vercel Web Analytics, which uses no cookies.
-- **Lighthouse (mobile, local production build):** Performance 95–99, Accessibility 100, Best Practices 96, SEO 100.
+- **Performance:** fonts self-hosted through `next/font` (headline font preloaded), Firebase loaded on demand after first paint, server functions in Mumbai next to the database.
+- **Lighthouse (mobile, local production build):** Performance 93–99, Accessibility 100, Best Practices 96, SEO 100.
+- **CI:** dependency audit, lint, typecheck, build, security-rules tests and end-to-end tests on every push. Releases are published with the **Release** workflow (Actions tab), which tags the version in `package.json` and uses its notes from the changelog.
+- **Security policy:** see [SECURITY.md](SECURITY.md).
 - Optional env vars: `GOOGLE_SITE_VERIFICATION` and `BING_SITE_VERIFICATION` for Search Console and Bing Webmaster Tools.
 
 ## Run it locally

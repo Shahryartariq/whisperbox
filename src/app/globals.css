@@ -1,7 +1,4 @@
 @import "tailwindcss";
-@import "@fontsource-variable/bricolage-grotesque/wdth.css";
-@import "@fontsource/caveat/500.css";
-@import "@fontsource/caveat/600.css";
 
 @theme {
   --color-dusk: #2a1e5c;
@@ -15,8 +12,11 @@
   --color-blush-strong: #ef7fb8;
   --color-haze: #b8aae6;
 
-  --font-sans: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-hand: "Caveat", "Comic Sans MS", cursive;
+}
+
+@theme inline {
+  --font-sans: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-hand: var(--font-caveat), "Comic Sans MS", cursive;
 }
 
 html {
@@ -26,7 +26,7 @@ html {
 }
 
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
   font-variation-settings: "wdth" 100;
   /* faint dot grid: the corkboard the notes are pinned to */
   background-image: radial-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px);

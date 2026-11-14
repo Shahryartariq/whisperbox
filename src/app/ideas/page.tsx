@@ -2,16 +2,17 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd } from "@/components/json-ld";
 import { IDEA_GROUPS } from "@/lib/ideas";
+import { pageMetadata } from "@/lib/metadata";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const COUNT = IDEA_GROUPS.reduce((n, g) => n + g.questions.length, 0);
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: `${COUNT} anonymous question ideas to ask your friends`,
   description:
     "Anonymous question ideas for friends, crushes, groups and honest feedback. Pick one and share it as a link: answers come back with no names attached.",
-  alternates: { canonical: "/ideas" },
-};
+  path: "/ideas",
+});
 
 export default function IdeasPage() {
   return (
@@ -76,6 +77,8 @@ export default function IdeasPage() {
                 <span className="text-lg font-semibold">{q}</span>
                 <Link
                   href={`/?q=${encodeURIComponent(q)}`}
+                  rel="nofollow"
+                  prefetch={false}
                   className="shrink-0 rounded-full bg-blush px-4 py-1.5 text-sm font-bold text-ink hover:bg-blush-strong"
                   aria-label={`Ask this: ${q}`}
                 >

@@ -9,7 +9,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
   const { id } = await params;
   const q = await getPublicQuestion(id);
   return renderOgCard(
-    q?.text ?? "Ask anything. Read what people really think.",
+    q.state === "found" ? q.text : "Ask anything. Read what people really think.",
     "Answer anonymously. No names, no sign-up.",
   );
 }
