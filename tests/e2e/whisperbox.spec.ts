@@ -91,7 +91,7 @@ test("the asker never sees the answer box on their own question", async ({ page 
   await page.getByRole("button", { name: "Create my link" }).click();
   await expect(page.getByText("Your link is ready. Share it anywhere.")).toBeVisible();
   await page.reload();
-  await expect(page.getByText("Share your link")).toBeVisible();
+  await expect(page.getByText("Share your link", { exact: true })).toBeVisible();
   await expect(page.getByLabel("Your answer")).toHaveCount(0);
   await expect(page.getByText("Report it")).toHaveCount(0);
 });
