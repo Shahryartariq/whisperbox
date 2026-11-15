@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useSyncExternalStore } from "react";
-import { deleteQuestion, setQuestionOpen, type Question } from "@/lib/whisper";
+import { useRef, useState, useSyncExternalStore } from "react";
+import { describeWriteError } from "@/lib/errors";
+import type { Question } from "@/lib/whisper";
 
 const noop = () => () => {};
 
@@ -15,24 +16,34 @@ export function SharePanel({ question, isNew }: { question: Question; isNew: boo
     () => false,
   );
   const url = origin ? `${origin}/q/${question.id}` : "";
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<"no" | "yes" | "manual">("no");
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const urlBox = useRef<HTMLInputElement>(null);
 
   async function copy() {
-    await navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied("yes");
+      setTimeout(() => setCopied("no"), 2000);
+    } catch {
+      // Clipboard access can be blocked (in-app browsers, permissions). Select
+      // the link so it can be copied by hand.
+      urlBox.current?.focus();
+      urlBox.current?.select();
+      setCopied("manual");
+    }
   }
 
   async function toggleOpen() {
     setBusy(true);
     setError(null);
     try {
+      const { setQuestionOpen } = await import("@/lib/whisper");
       await setQuestionOpen(question.id, !question.open);
-    } catch {
-      setError("That didn't save. Try again.");
+    } catch (err) {
+      setError(describeWriteError(err, "manage"));
     } finally {
       setBusy(false);
     }
@@ -42,10 +53,11 @@ export function SharePanel({ question, isNew }: { question: Question; isNew: boo
     setBusy(true);
     setError(null);
     try {
+      const { deleteQuestion } = await import("@/lib/whisper");
       await deleteQuestion(question.id);
       router.push("/");
-    } catch {
-      setError("The question wasn't deleted. Try again.");
+    } catch (err) {
+      setError(describeWriteError(err, "manage"));
       setBusy(false);
     }
   }
@@ -66,6 +78,7 @@ export function SharePanel({ question, isNew }: { question: Question; isNew: boo
         </label>
         <input
           id="share-url"
+          ref={urlBox}
           readOnly
           value={url}
           onFocus={(e) => e.currentTarget.select()}
@@ -77,9 +90,12 @@ export function SharePanel({ question, isNew }: { question: Question; isNew: boo
           disabled={!url}
           className="rounded-md bg-blush px-4 py-2.5 font-bold text-ink hover:bg-blush-strong"
         >
-          {copied ? "Copied" : "Copy link"}
+          {copied === "yes" ? "Copied" : "Copy link"}
         </button>
       </div>
+      <p aria-live="polite" className="text-sm text-haze">
+        {copied === "manual" && "Couldn't copy automatically. The link is selected: copy it from the box."}
+      </p>
       <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm">
         <a
           href={`https://wa.me/?text=${encodeURIComponent(`${shareText} ${url}`)}`}
@@ -105,7 +121,7 @@ export function SharePanel({ question, isNew }: { question: Question; isNew: boo
           type="button"
           onClick={toggleOpen}
           disabled={busy}
-          className="font-semibold text-haze hover:text-paper"
+          className="font-semibold text-haze hover:text-paper disabled:opacity-50"
         >
           {question.open ? "Stop taking answers" : "Start taking answers again"}
         </button>

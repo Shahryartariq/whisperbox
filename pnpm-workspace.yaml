@@ -1,3 +1,7 @@
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver
+
+# Security: firebase pulls in an old @grpc/grpc-js (GHSA-f596-whhp-79r4).
+overrides:
+  "@grpc/grpc-js": ">=1.13.6"

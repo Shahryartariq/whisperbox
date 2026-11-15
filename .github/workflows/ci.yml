@@ -5,10 +5,20 @@ on:
     branches: [main]
   pull_request:
 
+# Read-only token: nothing in CI needs to write to the repository.
+permissions:
+  contents: read
+
+# A newer push to the same branch cancels the run it replaces.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check:
     name: Lint, typecheck, build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -17,6 +27,8 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Dependency audit (what ships to users)
+        run: pnpm audit --prod --audit-level high
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm build
@@ -24,6 +36,7 @@ jobs:
   firebase:
     name: Security rules + end-to-end (Firebase emulators)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     env:
       NEXT_PUBLIC_FIREBASE_EMULATOR: "true"
       NEXT_PUBLIC_FIREBASE_PROJECT_ID: demo-whisperbox
@@ -38,6 +51,11 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
+      - name: Cache Firebase emulators
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-${{ hashFiles('pnpm-lock.yaml') }}
       - run: pnpm install --frozen-lockfile
       - name: Security rules tests
         run: pnpm test:rules
